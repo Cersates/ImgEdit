@@ -28,9 +28,131 @@ public class Edit {
 
         final Window progWindow = new Window("Графический редактор");
 
-        progWindow.setSize(700, 700);
+        progWindow.setSize(1000, 700);
         progWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         maincolor = java.awt.Color.black;
+
+        JMenuBar menuBar = new JMenuBar();
+        progWindow.setJMenuBar(menuBar);
+        menuBar.setBounds(0, 0, 350, 30);
+        JMenu fileMenu = new JMenu("Файл");
+        JMenu fileMenu2 = new JMenu("Цвет");
+        JMenu fileMenu3 = new JMenu("О программе");
+        menuBar.add(fileMenu);
+        menuBar.add(fileMenu2);
+        menuBar.add(fileMenu3);
+
+        // Меню цвет
+        Action selectAction = new AbstractAction("Выбор цвета") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                maincolor = JColorChooser.showDialog(null, "Выберите цвет", maincolor);
+                colorbutton.setBackground(maincolor);
+            }
+        };
+        JMenuItem selectMenu = new JMenuItem(selectAction);
+        fileMenu2.add(selectMenu);
+////////////////////////////////////////////////////////////////////////////////
+
+        // Меню о программе
+        Action aboutAction = new AbstractAction("О программе") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JOptionPane.showMessageDialog(null, "Выподнила: Фицай Инна\n\nОдесса 2014");
+            }
+        };
+        JMenuItem aboutMenu = new JMenuItem(aboutAction);
+        fileMenu3.add(aboutMenu);
+////////////////////////////////////////////////////////////////////////////////
+
+        // Меню файл
+        Action loadAction = new AbstractAction("Загрузить") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JFileChooser jf = new JFileChooser();
+                int result = jf.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        //при выборе изображения подстраиваем размеры формы и панели под размеры данного изображения
+                        fileName = jf.getSelectedFile().getAbsolutePath();
+                        File iF = new File(fileName);
+                        jf.addChoosableFileFilter(new Filter(".png"));
+                        jf.addChoosableFileFilter(new Filter(".jpg"));
+                        imag = ImageIO.read(iF);
+                        loading = true;
+                        progWindow.setSize(imag.getWidth() + 40, imag.getWidth() + 80);
+                        pai.setSize(imag.getWidth(), imag.getWidth());
+                        pai.repaint();
+                    } catch (FileNotFoundException ex) {
+                        JOptionPane.showMessageDialog(progWindow, "Файл не существует");
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(progWindow, "Ошибка ввода-вывода");
+                    }
+                }
+            }
+        };
+        JMenuItem loadMenu = new JMenuItem(loadAction);
+        fileMenu.add(loadMenu);
+
+        Action saveAction = new AbstractAction("Сохранить") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    JFileChooser jf = new JFileChooser();
+                    // Создаем фильтры  файлов
+                    Filter pngFilter = new Filter(".png");
+                    Filter jpgFilter = new Filter(".jpg");
+                    if (fileName == null) {
+                        // Добавляем фильтры
+                        jf.addChoosableFileFilter(pngFilter);
+                        jf.addChoosableFileFilter(jpgFilter);
+                        int result = jf.showSaveDialog(null);
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            fileName = jf.getSelectedFile().getAbsolutePath();
+                        }
+                    }
+                    // Смотрим какой фильтр выбран
+                    if (jf.getFileFilter() == pngFilter) {
+                        ImageIO.write(imag, "png", new File(fileName + ".png"));
+                    } else {
+                        ImageIO.write(imag, "jpeg", new File(fileName + ".jpg"));
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(progWindow, "Ошибка ввода-вывода");
+                }
+            }
+        };
+        JMenuItem saveMenu = new JMenuItem(saveAction);
+        fileMenu.add(saveMenu);
+
+        Action saveasAction = new AbstractAction("Сохранить как...") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    JFileChooser jf = new JFileChooser();
+                    // Создаем фильтры для файлов
+                    Filter pngFilter = new Filter(".png");
+                    Filter jpgFilter = new Filter(".jpg");
+                    // Добавляем фильтры
+                    jf.addChoosableFileFilter(pngFilter);
+                    jf.addChoosableFileFilter(jpgFilter);
+                    int result = jf.showSaveDialog(null);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        fileName = jf.getSelectedFile().getAbsolutePath();
+                    }
+                    // Смотрим какой фильтр выбран
+                    if (jf.getFileFilter() == pngFilter) {
+                        ImageIO.write(imag, "png", new File(fileName + ".png"));
+                    } else {
+                        ImageIO.write(imag, "jpeg", new File(fileName + ".jpg"));
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(progWindow, "Ошибка ввода-вывода");
+                }
+            }
+        };
+        JMenuItem saveasMenu = new JMenuItem(saveasAction);
+        fileMenu.add(saveasMenu);
 
         pai = new Paint();
         pai.setBounds(30, 30, 260, 260);
@@ -38,9 +160,10 @@ public class Edit {
         pai.setOpaque(true);
         progWindow.add(pai);
 
+        // Тулбар для кнопок
         JToolBar toolbar = new JToolBar("Toolbar", JToolBar.VERTICAL);
 
-        JButton penbutton = new JButton(new ImageIcon("pen.png"));
+        JButton penbutton = new JButton(new ImageIcon("Img/pen.png"));
         penbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -48,7 +171,7 @@ public class Edit {
             }
         });
         toolbar.add(penbutton);
-        JButton brushbutton = new JButton(new ImageIcon("brush.png"));
+        JButton brushbutton = new JButton(new ImageIcon("Img/brush.png"));
         brushbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -57,7 +180,7 @@ public class Edit {
         });
         toolbar.add(brushbutton);
 
-        JButton lasticbutton = new JButton(new ImageIcon("lastic.png"));
+        JButton lasticbutton = new JButton(new ImageIcon("Img/lastic.png"));
         lasticbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -66,7 +189,7 @@ public class Edit {
         });
         toolbar.add(lasticbutton);
 
-        JButton textbutton = new JButton(new ImageIcon("text.png"));
+        JButton textbutton = new JButton(new ImageIcon("Img/text.png"));
         textbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -75,7 +198,7 @@ public class Edit {
         });
         toolbar.add(textbutton);
 
-        JButton linebutton = new JButton(new ImageIcon("line.png"));
+        JButton linebutton = new JButton(new ImageIcon("Img/line.png"));
         linebutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -84,7 +207,7 @@ public class Edit {
         });
         toolbar.add(linebutton);
 
-        JButton elipsbutton = new JButton(new ImageIcon("elips.png"));
+        JButton elipsbutton = new JButton(new ImageIcon("Img/elips.png"));
         elipsbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -93,7 +216,7 @@ public class Edit {
         });
         toolbar.add(elipsbutton);
 
-        JButton rectbutton = new JButton(new ImageIcon("rect.png"));
+        JButton rectbutton = new JButton(new ImageIcon("Img/rect.png"));
         rectbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -104,6 +227,25 @@ public class Edit {
 
         toolbar.setBounds(0, 0, 30, 300);
         progWindow.add(toolbar);
+
+        // Тулбар для кнопок
+        JToolBar colorbar = new JToolBar("Colorbar", JToolBar.HORIZONTAL);
+        colorbar.setBounds(30, 0, 50, 30);
+        colorbutton = new JButton();
+        colorbutton.setBackground(maincolor);
+        colorbutton.setBounds(15, 5, 20, 20);
+        colorbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                maincolor = JColorChooser.showDialog(null, "Выберите цвет", maincolor);
+                colorbutton.setBackground(maincolor);
+            }
+        });
+
+        colorbar.add(colorbutton);
+
+        colorbar.setLayout(null);
+        progWindow.add(colorbar);
 
         choosColor = new JColorChooser(maincolor);
         choosColor.getSelectionModel().addChangeListener(new ChangeListener() {
@@ -170,8 +312,6 @@ public class Edit {
                         break;
                     // текст
                     case 3:
-                        // устанавливаем фокус для панели,
-                        // чтобы печатать на ней текст
                         pai.requestFocus();
                         break;
                 }
@@ -277,6 +417,8 @@ public class Edit {
         });
         progWindow.setLayout(null);
         progWindow.setVisible(true);
+        progWindow.setLocationRelativeTo(null);
+
     }
 
     class Paint extends JPanel { //рисование
