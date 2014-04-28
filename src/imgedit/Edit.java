@@ -23,6 +23,7 @@ public class Edit {
     public int yPad;
     public int xf;
     public int yf;
+    public String inpStrB;
 
     public Edit() {
 
@@ -194,6 +195,7 @@ public class Edit {
             @Override
             public void actionPerformed(ActionEvent event) {
                 mode = 3;
+
             }
         });
         toolbar.add(textbutton);
@@ -385,15 +387,18 @@ public class Edit {
                     g2.setColor(maincolor);
                     g2.setStroke(new BasicStroke(2.0f));
 
-                    String str = "";
-                    str += e.getKeyChar();
+//                    String str = "";
+                    String str = JOptionPane.showInputDialog(null, "Введите строку", "Ввод строки", JOptionPane.QUESTION_MESSAGE);
+//                    str += e.getKeyChar();
                     g2.setFont(new Font("Arial", 0, 15));
-                    g2.drawString(str, xPad, yPad);
-                    xPad += 10;
+                    if (str != null) {
+                        g2.drawString(str, xPad, yPad);
+                        xPad += 10;
                     // устанавливаем фокус для панели,
-                    // чтобы печатать на ней текст
-                    pai.requestFocus();
-                    pai.repaint();
+                        // чтобы печатать на ней текст
+                        pai.requestFocus();
+                        pai.repaint();
+                    }
                 }
             }
         });
