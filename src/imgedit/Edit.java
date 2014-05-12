@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -55,17 +57,35 @@ public class Edit {
         fileMenu2.add(selectMenu);
 ////////////////////////////////////////////////////////////////////////////////
 
+        // Меню справка
+        Action helpAction = new AbstractAction("Справка") {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    Runtime.getRuntime().exec("./Help.bat");
+                } catch (IOException ex) {
+                    Logger.getLogger(Edit.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        JMenuItem helpMenu = new JMenuItem(helpAction);
+        fileMenu3.add(helpMenu);
+
         // Меню о программе
         Action aboutAction = new AbstractAction("О программе") {
             @Override
             public void actionPerformed(ActionEvent event) {
-                JOptionPane.showMessageDialog(null, "Выподнила: Фицай Инна\n\nОдесса 2014");
+                JOptionPane.showMessageDialog(null, ""
+                        + "Тема курсової роботи: \"Растровий графічний редактор\"\n"
+                        + "Дисципліна Об'єктно-орієнтоване програмування\n"
+                        + "Виконала: студентка групи АІ-121\n"
+                        + "Фіцай Інна Іванівна");
             }
         };
         JMenuItem aboutMenu = new JMenuItem(aboutAction);
         fileMenu3.add(aboutMenu);
-////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
         // Меню файл
         Action loadAction = new AbstractAction("Загрузить") {
             @Override
@@ -394,7 +414,7 @@ public class Edit {
                     if (str != null) {
                         g2.drawString(str, xPad, yPad);
                         xPad += 10;
-                    // устанавливаем фокус для панели,
+                        // устанавливаем фокус для панели,
                         // чтобы печатать на ней текст
                         pai.requestFocus();
                         pai.repaint();
